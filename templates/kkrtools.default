@@ -1,0 +1,13 @@
+%block SCF
+VXC   = VWN
+ALG   = BROYDEN2
+NITER = 200
+MIX   = 0.2
+%endblock SCF
+
+%block DOS
+NE   = 100
+EMIN = -0.2
+EMAX = 1.2
+ImE  = 0.01
+%endblock DOS

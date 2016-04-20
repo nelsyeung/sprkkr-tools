@@ -1,0 +1,20 @@
+%block SCF
+VXC   = VBH # Test if comments are ignored
+
+# The above empty line tests if empty lines are ignored
+notsupported = T # Test if not supported variables are ignored
+NITER = 250
+%endblock SCF
+
+%block DOS
+NE = 200
+%endblock # It should work even if endblock doesn't contain the name
+
+%block DOS # Test for empty blocks
+%endblock DOS
+
+outside =  T # Test if variables outside a block are ignored
+
+%block notsupported # Test if not supported blocks are ignored
+NE = 200
+%endblock # It should work even if endblock doesn't contain the name
