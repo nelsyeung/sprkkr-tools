@@ -4,7 +4,7 @@ import os
 import collections
 
 
-def get_settings(inputFile):
+def get_settings(inputFile='kkrtools.inp'):
     """Return settings from an input file along with the defaults."""
     block = False
     supportedBlock = ['kkrtools', 'scf', 'dos']
