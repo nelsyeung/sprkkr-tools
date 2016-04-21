@@ -4,7 +4,7 @@ import os
 import collections
 
 
-def getSettings(inputFile):
+def get_settings(inputFile):
     """Return settings from an input file along with the defaults."""
     block = False
     supportedBlock = ['kkrtools', 'scf', 'dos']
@@ -19,7 +19,7 @@ def getSettings(inputFile):
         os.path.dirname(os.path.realpath(__file__)), '..', 'templates')
     defaultFile = os.path.join(templatesDir, 'kkrtools.default')
 
-    def getSetting(line):
+    def get_setting(line):
         """Return the setting key and value from a string line."""
         nonlocal block
         nonlocal supportedBlock
@@ -60,14 +60,14 @@ def getSettings(inputFile):
 
         return Setting(False, False, False)
 
-    def setSettings(inputFile, default=False):
+    def set_settings(inputFile, default=False):
         """Set settings from input file."""
         nonlocal lineNum
 
         with open(inputFile) as f:
             for line in f:
                 lineNum += 1
-                setting = getSetting(line)
+                setting = get_setting(line)
 
                 if (setting.block is not False and
                         # Check whether the new setting is supported
@@ -76,7 +76,7 @@ def getSettings(inputFile):
 
     # First load all the defaults
     # then override it with the user inputs
-    setSettings(defaultFile, True)
-    setSettings(inputFile)
+    set_settings(defaultFile, True)
+    set_settings(inputFile)
 
     return settings
