@@ -10,7 +10,7 @@ def test_get_settings():
     Test whether getSettings method
     get settings from an input file along with the defaults.
     """
-    inputFile = os.path.join('tests', 'fixtures', 'kkrtools.inp')
+    input_file = os.path.join('tests', 'fixtures', 'kkrtools.inp')
     expect = {
         'kkrtools': {},
         'scf': {
@@ -26,6 +26,6 @@ def test_get_settings():
             'ImE': '0.01'
         }
     }
-    settings = fileparse.get_settings(inputFile)
+    settings = fileparse.get_settings(input_file)
 
     nose.tools.assert_equal(settings, expect)

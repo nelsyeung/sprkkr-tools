@@ -4,25 +4,25 @@ import os
 import collections
 
 
-def get_settings(inputFile='kkrtools.inp'):
+def get_settings(input_file='kkrtools.inp'):
     """Return settings from an input file along with the defaults."""
     block = False
-    supportedBlock = ['kkrtools', 'scf', 'dos']
-    lineNum = 0
+    supported_block = ['kkrtools', 'scf', 'dos']
+    line_num = 0
 
     settings = {
         'kkrtools': {},
         'scf': {},
         'dos': {}
     }
-    templatesDir = os.path.join(
+    templates_dir = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), '..', 'templates')
-    defaultFile = os.path.join(templatesDir, 'kkrtools.default')
+    default_file = os.path.join(templates_dir, 'kkrtools.default')
 
     def get_setting(line):
         """Return the setting key and value from a string line."""
         nonlocal block
-        nonlocal supportedBlock
+        nonlocal supported_block
         line = line.strip()
         Setting = collections.namedtuple('Setting', ['block', 'key', 'value'])
 
@@ -33,9 +33,9 @@ def get_settings(inputFile='kkrtools.inp'):
                 block = line.split()[1].lower()
 
                 # Check if block name is actually supported
-                if block not in supportedBlock:
+                if block not in supported_block:
                     print('Block ' + block +
-                          ' in line ' + str(lineNum) + ' not recognise')
+                          ' in line ' + str(line_num) + ' not recognise')
                     block = False
 
             # Check for end of a block
@@ -60,13 +60,13 @@ def get_settings(inputFile='kkrtools.inp'):
 
         return Setting(False, False, False)
 
-    def set_settings(inputFile, default=False):
+    def set_settings(input_file, default=False):
         """Set settings from input file."""
-        nonlocal lineNum
+        nonlocal line_num
 
-        with open(inputFile) as f:
+        with open(input_file) as f:
             for line in f:
-                lineNum += 1
+                line_num += 1
                 setting = get_setting(line)
 
                 if (setting.block is not False and
@@ -76,7 +76,7 @@ def get_settings(inputFile='kkrtools.inp'):
 
     # First load all the defaults
     # then override it with the user inputs
-    set_settings(defaultFile, True)
-    set_settings(inputFile)
+    set_settings(default_file, True)
+    set_settings(input_file)
 
     return settings
