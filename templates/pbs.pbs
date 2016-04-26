@@ -1,0 +1,109 @@
+#!/bin/bash
+#PBS -l nodes=4:ppn=2,pvmem=1024mb,walltime=01:00:00
+#PBS -V
+#PBS -q taskfarm
+#PBS -t kkrtools_TSTART-kkrtools_TEND
+
+cd $PBS_O_WORKDIR/new
+
+# Variable definitions
+ERR=false
+LOG="nlog"
+DATETIME=$(date +"%d/%m/%y %T")
+T=0 # Initialise total time taken.
+
+# Standard print to log file function.
+# It prints the message passed as a parameter with the time taken.
+printToLog() {
+    S=$SECONDS
+    T=$2
+    printf "$1 - Time taken: %02dh %02dm %02ds\n" "$(((S-T)/3600%24))" "$(((S-T)/60%60))" "$(((S-T)%60))" >> $LOG
+}
+
+mvToUnsuccessful() {
+    mv "../$1" ../../unsuccessful
+}
+
+calc() {
+    echo "$@" | bc -l | awk '{printf "%.2f", $0}';
+}
+
+# Get folder name by calculating the concentrations using the array ID (-t)
+# and change to the correct directory.
+# WANING! You must adjust the number of decimal places yourself, here and the calc() function.
+a=kkrtools_CONC1
+b=kkrtools_CONC2
+c=kkrtools_CONC3
+d=kkrtools_CONC4
+e=kkrtools_CONC5
+
+NUM=kkrtools_NUM
+STEP=$(calc $b/$((NUM-1)))
+NID=$(($PBS_ARRAYID-1))
+x=$((NID%NUM))
+y=$((NID/NUM))
+CONC2=$(calc $b-$x*$STEP)
+CONC3=$(calc $c+$x*$STEP)
+CONC4=$(calc $d-$y*$STEP)
+CONC5=$(calc $e+$y*$STEP)
+CONC="${a}_${CONC2}_${CONC3}_${CONC4}_${CONC5}"
+
+if [ -d "$CONC" ]; then
+    cd $CONC
+    CWD=${PWD##*/}
+
+    # Append to or create log file with current time.
+    if [ -f $LOG ]; then
+        printf "\n\n" >> $LOG
+    fi
+    printf "#######################\n# $DATETIME\n#######################\n" >> $LOG
+
+    cp pot.pot pot.pot_old # Backup initial potential file.
+
+    # Run SCF
+    mpirun kkrscf6.3MPI scf.inp > scf.out
+
+    # Check if potential file is created from kkrscf,
+    # if not, move folder to unsuccessful.
+    if [ -f "pot.pot_new" ]; then
+        printToLog "Successful: kkrscf6.3MPI scf.inp > scf.out" $T
+        T=$SECONDS
+
+        cp pot.pot_new pot.pot # Replace the original potential file with the converged one.
+
+        # Run DOS
+        mpirun kkrgen6.3MPI dos.inp 
+
+        # Check if DOS file is created from kkrgen,
+        # if not, move folder to unsuccessful.
+        if [ -f *DOS.dos ]; then
+            printToLog "Successful: kkrgen6.3MPI dos.inp" $T
+            T=$SECONDS
+
+            # Create readable data files and simple DOS plots.
+            DOSFNAME=$(find ./ -name "*DOS.dos")
+            sed -i 's/page size/page size 2500, 2500\n#/g' *.agr
+            plot_linux-gnu < "$DOSFNAME" > .agr
+            gracebat dos.agr -printfile dos.ps
+        else
+            # Move to unsuccessful.
+            printToLog "!!! ERROR: kkrgen6.3MPI dos.inp" $T
+            mvToUnsuccessful "$CWD"
+            $ERR=true
+        fi
+    else
+        # Move to unsuccessful
+        printToLog "!!! ERROR: kkrscf6.3MPI scf.inp > scf.out" $T
+        mvToUnsuccessful "$CWD"
+        $ERR=true
+    fi
+
+    printf "Total time taken: %02dh %02dm %02ds" "$((S/3600%24))" "$((S/60%60))" "$((S%60))" >> $LOG
+
+    # Move to raw folder if every ran successfully.
+    if [ "$ERR" = false ]; then
+        mv "../$CWD" "../../../raw/$CWD"
+    fi
+else
+    echo "$CONC does not exists."
+fi

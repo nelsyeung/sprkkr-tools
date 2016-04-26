@@ -1,0 +1,19 @@
+###############################################################################
+#  SPR-KKR input file    dos.inp
+#  created by SPRKKR tools on kkrtools_created_on
+###############################################################################
+ 
+CONTROL  DATASET     = kkrtools_DATASET
+         ADSI        = DOS 
+         POTFIL      = pot.pot 
+         PRINT = 0    
+         NONMAG
+ 
+MODE     LLOYD
+ 
+TAU      BZINT= POINTS  NKTAB= kkrtools_NKTAB 
+ 
+ENERGY   GRID={3}  NE={kkrtools_NE} 
+         EMIN=kkrtools_EMIN   EMAX=kkrtools_EMAX   ImE=kkrtools_ImE Ry
+ 
+TASK     DOS

@@ -1,13 +1,26 @@
+%block kkrtools
+elements       = elements
+concentrations = concentrations
+interval       = interval
+%endblock kkrtools
+
 %block SCF
-VXC   = VWN
-ALG   = BROYDEN2
-NITER = 200
-MIX   = 0.2
+NKTAB  = 250
+NE     = 30
+EMIN   = -0.2
+ImE    = 0.0
+NITER  = 200
+MIX    = 0.2
+VXC    = VWN
+TOL    = 0.00001
+ISTBRY = 1
+ALG    = BROYDEN2
 %endblock SCF
 
 %block DOS
-NE   = 100
-EMIN = -0.2
-EMAX = 1.2
-ImE  = 0.01
+NKTAB = 250
+NE    = 100
+EMIN  = -0.2
+EMAX  = 1.2
+ImE   = 0.01
 %endblock DOS

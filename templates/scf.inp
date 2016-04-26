@@ -1,0 +1,22 @@
+###############################################################################
+#  SPR-KKR input file    scf.inp 
+#  created by SPRKKR tools on kkrtools_created_on
+###############################################################################
+ 
+CONTROL  DATASET     = kkrtools_DATASET
+         ADSI        = SCF 
+         POTFIL      = pot.pot 
+         PRINT = 0    
+         NONMAG
+ 
+MODE     LLOYD
+ 
+TAU      BZINT= POINTS  NKTAB= kkrtools_NKTAB 
+ 
+ENERGY   GRID={5}  NE={kkrtools_NE} 
+         EMIN=kkrtools_EMIN   ImE=kkrtools_ImE Ry
+ 
+SCF      NITER=kkrtools_NITER MIX=kkrtools_MIX VXC=kkrtools_VXC
+         TOL=kkrtools_TOL  MIXOP=0.20  ISTBRY=kkrtools_ISTBRY 
+         QIONSCL=0.80 
+         NOSSITER 

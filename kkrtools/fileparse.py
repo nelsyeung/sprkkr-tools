@@ -9,7 +9,6 @@ def get_settings(input_file='kkrtools.inp'):
     block = False
     supported_block = ['kkrtools', 'scf', 'dos']
     line_num = 0
-
     settings = {
         'kkrtools': {},
         'scf': {},

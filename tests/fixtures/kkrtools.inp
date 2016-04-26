@@ -1,3 +1,9 @@
+%block kkrtools
+elements = Mg Zn Si Sn Bi
+concentrations = 0.8 0.2 0.7 0.2 0.1
+interval = 0.1
+%endblock kkrtools
+
 %block SCF
 VXC   = VBH # Test if comments are ignored
 

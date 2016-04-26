@@ -1,0 +1,12 @@
+%block kkrtools
+elements = Mg Zn Si Sn Bi
+concentrations = 0.1 0.9 0.2 0.7 0.1
+interval = 0.1
+%endblock kkrtools
+
+%block SCF
+VXC   = VBH
+%endblock SCF
+
+%block DOS
+%endblock DOS
