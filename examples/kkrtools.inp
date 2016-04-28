@@ -1,6 +1,6 @@
 %block kkrtools
 elements = Mg Zn Si Sn Bi
-concentrations = 0.1 0.9 0.2 0.7 0.1
+concentrations = 0.97 0.03 0.4 0.59 0.01
 interval = 0.1
 %endblock kkrtools
 
