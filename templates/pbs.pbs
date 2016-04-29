@@ -2,7 +2,7 @@
 #PBS -l nodes=4:ppn=2,pvmem=1024mb,walltime=01:00:00
 #PBS -V
 #PBS -q taskfarm
-#PBS -t kkrtools_TSTART-kkrtools_TEND
+#PBS -t tmpTSTART-tmpTEND
 
 cd $PBS_O_WORKDIR/new
 
@@ -31,13 +31,13 @@ calc() {
 # Get folder name by calculating the concentrations using the array ID (-t)
 # and change to the correct directory.
 # WANING! You must adjust the number of decimal places yourself, here and the calc() function.
-a=kkrtools_CONC1
-b=kkrtools_CONC2
-c=kkrtools_CONC3
-d=kkrtools_CONC4
-e=kkrtools_CONC5
+a=1.00
+b=1.00
+c=0.00
+d=1.00
+e=0.00
 
-NUM=kkrtools_NUM
+NUM=21
 STEP=$(calc $b/$((NUM-1)))
 NID=$(($PBS_ARRAYID-1))
 x=$((NID%NUM))
@@ -88,6 +88,23 @@ if [ -d "$CONC" ]; then
         else
             # Move to unsuccessful.
             printToLog "!!! ERROR: kkrgen6.3MPI dos.inp" $T
+            mvToUnsuccessful "$CWD"
+            $ERR=true
+        fi
+
+        # Run BSF
+        if [ -f bsf.inp ]; then
+            mpirun kkrgen6.3MPI bsf.inp
+        fi
+
+        # If BSF file is not created from kkrgen,
+        # move folder to unsuccessful.
+        if [ -f *spol.bsf ]; then
+            printToLog "Successful: kkrgen6.3MPI bsf.inp" $T
+            T=$SECONDS
+        else
+            # Move to unsuccessful.
+            printToLog "!!! ERROR: kkrgen6.3MPI bsf.inp" $T
             mvToUnsuccessful "$CWD"
             $ERR=true
         fi

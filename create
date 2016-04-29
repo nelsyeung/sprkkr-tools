@@ -2,6 +2,5 @@
 """Create system from kkrtools input file."""
 import kkrtools
 
-
-settings = kkrtools.parser.get_settings()
+settings = kkrtools.parser.parse_settings()
 kkrtools.gencomp.generate(settings)
