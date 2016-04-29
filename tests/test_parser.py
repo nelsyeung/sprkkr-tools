@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Test fileparse methods."""
+"""Test parser functions."""
 import nose
 import os
-from kkrtools import fileparse
+from kkrtools import parser
+
+fixtures_dir = os.path.join('tests', 'fixtures')
 
 
-def test_get_settings():
-    """
-    Test whether getSettings method
-    get settings from an input file along with the defaults.
-    """
-    input_file = os.path.join('tests', 'fixtures', 'kkrtools.inp')
+def test_parse_settings():
+    """Test parse_settings function."""
+    input_file = os.path.join(fixtures_dir, 'kkrtools.inp')
+    settings = parser.parse_settings(input_file)
     expect = {
         'kkrtools': {
             'elements': 'Mg Zn Si Sn Bi',
@@ -37,6 +37,5 @@ def test_get_settings():
             'ImE': '0.01'
         }
     }
-    settings = fileparse.get_settings(input_file)
 
     nose.tools.assert_equal(settings, expect)

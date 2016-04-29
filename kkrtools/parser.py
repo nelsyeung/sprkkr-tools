@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Parse inputs from file."""
+"""Own input output module."""
 import os
 import collections
 
 
-def get_settings(input_file='kkrtools.inp'):
+def parse_settings(input_file='kkrtools.inp'):
     """Return settings from an input file along with the defaults."""
     block = False
     supported_block = ['kkrtools', 'scf', 'dos']
@@ -18,7 +18,7 @@ def get_settings(input_file='kkrtools.inp'):
         os.path.dirname(os.path.realpath(__file__)), '..', 'templates')
     default_file = os.path.join(templates_dir, 'kkrtools.default')
 
-    def get_setting(line):
+    def parse_setting(line):
         """Return the setting key and value from a string line."""
         nonlocal block
         nonlocal supported_block
@@ -59,14 +59,14 @@ def get_settings(input_file='kkrtools.inp'):
 
         return Setting(False, False, False)
 
-    def set_settings(input_file, default=False):
-        """Set settings from input file."""
+    def store_settings(input_file, default=False):
+        """Store settings from input file."""
         nonlocal line_num
 
         with open(input_file) as f:
             for line in f:
                 line_num += 1
-                setting = get_setting(line)
+                setting = parse_setting(line)
 
                 if (setting.block is not False and
                         # Check whether the new setting is supported
@@ -75,7 +75,7 @@ def get_settings(input_file='kkrtools.inp'):
 
     # First load all the defaults
     # then override it with the user inputs
-    set_settings(default_file, True)
-    set_settings(input_file)
+    store_settings(default_file, True)
+    store_settings(input_file)
 
     return settings

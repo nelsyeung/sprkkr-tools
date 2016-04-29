@@ -3,19 +3,7 @@
 import os
 import datetime
 import math
-
-
-def find_line(filename, s):
-    """Return first encountered line from a file with matching string."""
-    value = ''
-
-    with open(filename, 'r') as f:
-        for line in f:
-            if s in line:
-                value = line
-                break
-
-    return value.strip()
+from . import nmod
 
 
 def generate(settings):
@@ -36,21 +24,8 @@ def generate(settings):
     interval = float(settings['kkrtools']['interval'])
     IT = [None]*5
     for i in range(len(elements)):
-        IT[i] = find_line(
+        IT[i] = nmod.find_first_line(
             os.path.join(templates_dir, 'elements.default'), elements[i])
-
-    def replace_all(text, reps):
-        """Replace all the matching strings from a piece of text."""
-        for i, j in reps.items():
-            text = text.replace(str(i), str(j))
-        return text
-
-    def modify_file(new, tmp, reps):
-        """Copy and modify the specified file to a new location."""
-        with open(new, 'w+') as fnew:
-            with open(tmp, 'r') as ftmp:
-                for line in ftmp:
-                    fnew.write(replace_all(line, reps))
 
     def create_single(concentrations):
         """Create a single system from the supplied concentrations."""
@@ -87,9 +62,9 @@ def generate(settings):
         if not os.path.exists(new_dir):
             os.makedirs(new_dir)
 
-        modify_file(new_scf, template_scf, reps['scf'])
-        modify_file(new_dos, template_dos, reps['dos'])
-        modify_file(new_pot, template_pot, reps['pot'])
+        nmod.modify_file(new_scf, template_scf, reps['scf'])
+        nmod.modify_file(new_dos, template_dos, reps['dos'])
+        nmod.modify_file(new_pot, template_pot, reps['pot'])
 
     def gen_concentrations():
         """Generate the required permutations of concentrations."""
@@ -137,4 +112,4 @@ def generate(settings):
     pbs_inp = 'pbs.pbs'
     new_pbs = os.path.join(system_dir, pbs_inp)
     template_pbs = os.path.join(templates_dir, pbs_inp)
-    modify_file(new_pbs, template_pbs, reps['pbs'])
+    nmod.modify_file(new_pbs, template_pbs, reps['pbs'])

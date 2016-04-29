@@ -3,5 +3,5 @@
 import kkrtools
 
 
-settings = kkrtools.fileparse.get_settings()
+settings = kkrtools.parser.get_settings()
 kkrtools.gencomp.generate(settings)
