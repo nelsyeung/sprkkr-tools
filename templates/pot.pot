@@ -1,7 +1,7 @@
 *******************************************************************************
-HEADER    'SCF-start data created by SPRKKR tools  kkrtools_created_on
+HEADER    'SCF-start data created by SPRKKR tools  kkrtools_created_on'
 *******************************************************************************
-TITLE     'SPR-KKR calculation for kkrtools_DATASET
+TITLE     'SPR-KKR calculation for kkrtools_DATASET'
 SYSTEM    kkrtools_DATASET
 PACKAGE   SPRKKR
 FORMAT    6  (21.05.2007)
