@@ -1,6 +1,0 @@
-#!/usr/bin/env python3
-"""Create system from kkrtools input file."""
-import kkrtools
-
-settings = kkrtools.parser.parse_settings()
-kkrtools.gencomp.generate(settings)

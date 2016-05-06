@@ -2,6 +2,7 @@
 """Generates compounds."""
 import os
 import math
+from decimal import getcontext, Decimal
 from datetime import datetime
 from . import nmod
 
@@ -22,7 +23,12 @@ def generate(settings):
     system_dir = os.path.join('generated', ''.join(elements), 'new')
 
     init_conc = settings['kkrtools']['concentrations'].split()
-    interval = float(settings['kkrtools']['interval'])
+    precision = 2
+    for i in range(len(init_conc)):
+        precision = max(precision, len(init_conc[i].split('.')[1]) + 1)
+        init_conc[i] = Decimal(init_conc[i])
+    getcontext().prec = precision
+    interval = Decimal(settings['kkrtools']['interval'])
 
     # Export shared settings from kkrtools block across all the blocks.
     shared_settings = ['created_on']
@@ -40,7 +46,7 @@ def generate(settings):
     for block in settings:
         reps[block] = {}
 
-    def create_single(concentrations):
+    def generate_single(concentrations):
         """Create a single system from the supplied concentrations."""
         concentrations = ['%.2f' % abs(x) for x in concentrations]
         new_dir = os.path.join(system_dir, '_'.join(concentrations))
@@ -68,20 +74,20 @@ def generate(settings):
     def gen_concentrations():
         """Generate the required permutations of concentrations."""
         new_conc = init_conc.copy()
-        x_range = range(math.floor((1 - float(init_conc[0])) / interval) + 1)
-        y_range = range(math.floor((1 - float(init_conc[2]) -
-                                    float(init_conc[4])) / interval) + 1)
+        x_range = range(math.floor((1 - init_conc[0]) / interval) + 1)
+        y_range = range(math.floor((1 - init_conc[2] - init_conc[4]) /
+                                   interval) + 1)
 
         for x in x_range:
-            new_conc[0] = float(init_conc[0]) + x * interval
-            new_conc[1] = 1 - float(new_conc[0])
+            new_conc[0] = init_conc[0] + x * interval
+            new_conc[1] = 1 - new_conc[0]
 
             for y in y_range:
-                new_conc[2] = float(init_conc[2]) + y * interval
-                new_conc[3] = 1 - new_conc[2] - float(init_conc[4])
-                new_conc[4] = float(init_conc[4])
+                new_conc[2] = init_conc[2] + y * interval
+                new_conc[3] = 1 - new_conc[2] - init_conc[4]
+                new_conc[4] = init_conc[4]
 
-                create_single(new_conc)
+                generate_single(new_conc)
 
     if not os.path.exists(system_dir):
         os.makedirs(system_dir)
@@ -93,12 +99,12 @@ def generate(settings):
     gen_concentrations()
 
     for i in range(len(elements)):
-        reps['pbs']['kkrtools_CONC' + str(i+1)] = init_conc[i]
+        reps['pbs']['kkrtools_CONC' + str(i+1)] = str(init_conc[i])
 
     reps['pbs']['kkrtools_TSTART'] = 1
-    x_range = math.floor((1 - float(init_conc[0])) / interval) + 1
-    y_range = math.floor((1 - float(init_conc[2]) -
-                          float(init_conc[4])) / interval) + 1
+    x_range = math.floor((1 - init_conc[0]) / interval) + 1
+    y_range = math.floor((1 - init_conc[2] - init_conc[4]) /
+                         interval) + 1
     reps['pbs']['kkrtools_NUM'] = x_range
     reps['pbs']['kkrtools_TEND'] = x_range * y_range
 
