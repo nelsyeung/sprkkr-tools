@@ -7,7 +7,7 @@ python:
 
 install: pip install coverage
 
-script: nosetests --with-coverage --cover-min-percentage=100
+script: nosetests --with-coverage --cover-erase --cover-package=kkrtools --cover-min-percentage=100
 
 notifications:
   email:
