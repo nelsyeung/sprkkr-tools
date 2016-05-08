@@ -44,6 +44,13 @@ def test_parse_settings():
             'EMIN': '-0.2',
             'EMAX': '1.2',
             'ImE': '0.01'
+        },
+        'pbs': {
+            'nodes': '4',
+            'ppn': '2',
+            'pvmem': '1024mb',
+            'walltime': '08:00:00',
+            'queue': 'taskfarm'
         }
     }
 

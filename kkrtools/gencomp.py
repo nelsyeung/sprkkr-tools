@@ -20,7 +20,11 @@ def generate(settings):
     settings['kkrtools']['created_on'] = now.strftime('%d/%m/%Y %H:%M:%S')
 
     elements = settings['kkrtools']['elements'].split()
-    system_dir = os.path.join('generated', ''.join(elements), 'new')
+    sys_dir = os.path.join('generated', ''.join(elements))
+    sys_new_dir = os.path.join(sys_dir, 'new')
+
+    if not os.path.exists(sys_new_dir):
+        os.makedirs(sys_new_dir)
 
     init_conc = settings['kkrtools']['concentrations'].split()
     precision = 2
@@ -29,6 +33,7 @@ def generate(settings):
         init_conc[i] = Decimal(init_conc[i])
     getcontext().prec = precision
     interval = Decimal(settings['kkrtools']['interval'])
+    num_generated = 0
 
     # Export shared settings from kkrtools block across all the blocks.
     shared_settings = ['created_on']
@@ -42,14 +47,19 @@ def generate(settings):
             os.path.join(templates_dir, 'elements.default'), elements[i])
 
     # Initialise replacements variables
-    reps = {'pot': {}, 'pbs': {}}
+    reps = {'pot': {}}
     for block in settings:
-        reps[block] = {}
+        if block not in reps:
+            reps[block] = {}
+
+        for setting in settings[block]:
+            reps[block]['kkrtools_' + setting] = settings[block][setting]
 
     def generate_single(concentrations):
         """Create a single system from the supplied concentrations."""
         concentrations = ['%.2f' % abs(x) for x in concentrations]
-        new_dir = os.path.join(system_dir, '_'.join(concentrations))
+        dirname = '_'.join(concentrations)
+        new_dir = os.path.join(sys_new_dir, dirname)
         inp_files = ['scf.inp', 'dos.inp', 'pot.pot']
         templates, new_files = {}, {}
 
@@ -71,8 +81,12 @@ def generate(settings):
             nmod.modify_file(
                 templates[inp_type], new_files[inp_type], reps[inp_type])
 
+        with open(os.path.join(sys_dir, 'kkrtools.dirs'), 'a') as f:
+            f.write(dirname + '\n')
+
     def gen_concentrations():
         """Generate the required permutations of concentrations."""
+        nonlocal num_generated
         new_conc = init_conc.copy()
         x_range = range(math.floor((1 - init_conc[0]) / interval) + 1)
         y_range = range(math.floor((1 - init_conc[2] - init_conc[4]) /
@@ -89,26 +103,13 @@ def generate(settings):
 
                 generate_single(new_conc)
 
-    if not os.path.exists(system_dir):
-        os.makedirs(system_dir)
-
-    for block in settings:
-        for setting in settings[block]:
-            reps[block]['kkrtools_' + setting] = settings[block][setting]
+                num_generated += 1
 
     gen_concentrations()
 
-    for i in range(len(elements)):
-        reps['pbs']['kkrtools_CONC' + str(i+1)] = str(init_conc[i])
-
-    reps['pbs']['kkrtools_TSTART'] = 1
-    x_range = math.floor((1 - init_conc[0]) / interval) + 1
-    y_range = math.floor((1 - init_conc[2] - init_conc[4]) /
-                         interval) + 1
-    reps['pbs']['kkrtools_NUM'] = x_range
-    reps['pbs']['kkrtools_TEND'] = x_range * y_range
+    reps['pbs']['kkrtools_t'] = num_generated
 
     pbs_inp = 'pbs.pbs'
-    new_pbs = os.path.join(system_dir, pbs_inp)
+    new_pbs = os.path.join(sys_dir, pbs_inp)
     template_pbs = os.path.join(templates_dir, pbs_inp)
     nmod.modify_file(template_pbs, new_pbs, reps['pbs'])

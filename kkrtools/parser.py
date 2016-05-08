@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Own input output module."""
+"""Parser module."""
 import os
 import collections
 
@@ -7,13 +7,9 @@ import collections
 def parse_settings(input_file='kkrtools.inp'):
     """Return settings from an input file along with the defaults."""
     block = False
-    supported_block = ['kkrtools', 'scf', 'dos']
+    supported_blocks = ['kkrtools', 'scf', 'dos', 'pbs']
+    settings = {b: {} for b in supported_blocks}
     line_num = 0
-    settings = {
-        'kkrtools': {},
-        'scf': {},
-        'dos': {}
-    }
     templates_dir = os.path.join(
         os.path.dirname(os.path.realpath(__file__)), '..', 'templates')
     default_file = os.path.join(templates_dir, 'kkrtools.default')
@@ -21,7 +17,7 @@ def parse_settings(input_file='kkrtools.inp'):
     def parse_setting(line):
         """Return the setting key and value from a string line."""
         nonlocal block
-        nonlocal supported_block
+        nonlocal supported_blocks
         line = line.strip()
         Setting = collections.namedtuple('Setting', ['block', 'key', 'value'])
 
@@ -32,7 +28,7 @@ def parse_settings(input_file='kkrtools.inp'):
                 block = line.split()[1].lower()
 
                 # Check if block name is actually supported
-                if block not in supported_block:
+                if block not in supported_blocks:
                     print('Block ' + block +
                           ' in line ' + str(line_num) + ' not recognise')
                     block = False
