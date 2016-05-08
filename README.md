@@ -19,8 +19,7 @@ Edit the input file to your needs and execute the generate script.
 ```
 ./generate
 ```
-A generated folder should be created with the newly generated systems.
-
+A generated folder should be created with the newly generated systems.  
 You may now submit the pbs script inside the generated/$system folder.
 ```
 cd generated/MgZnSiSnBi
