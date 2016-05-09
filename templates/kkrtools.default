@@ -26,8 +26,8 @@ ImE   = 0.01
 %endblock DOS
 
 %block PBS
-nodes    = 4
-ppn      = 2
+nodes    = 1
+ppn      = 1
 pvmem    = 1024mb
 walltime = 08:00:00
 queue    = taskfarm

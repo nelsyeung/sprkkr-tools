@@ -60,8 +60,8 @@ def test_parse_settings_pbs():
     input_file = os.path.join(fixtures_dir, 'kkrtools.inp')
     settings = parser.parse_settings(input_file)
     expect = {
-        'nodes': '4',
-        'ppn': '2',
+        'nodes': '1',
+        'ppn': '1',
         'pvmem': '1024mb',
         'walltime': '08:00:00',
         'queue': 'taskfarm'
