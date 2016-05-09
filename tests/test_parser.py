@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Test parser functions."""
-import nose
 import os
 from kkrtools import parser
 
@@ -17,7 +16,7 @@ def test_parse_settings_kkrtools():
         'interval': '0.1'
     }
 
-    nose.tools.eq_(settings['kkrtools'], expect)
+    assert settings['kkrtools'] == expect
 
 
 def test_parse_settings_scf():
@@ -37,7 +36,7 @@ def test_parse_settings_scf():
         'ALG': 'BROYDEN2'
     }
 
-    nose.tools.eq_(settings['scf'], expect)
+    assert settings['scf'] == expect
 
 
 def test_parse_settings_dos():
@@ -52,7 +51,7 @@ def test_parse_settings_dos():
         'ImE': '0.01'
     }
 
-    nose.tools.eq_(settings['dos'], expect)
+    assert settings['dos'] == expect
 
 
 def test_parse_settings_pbs():
@@ -67,4 +66,4 @@ def test_parse_settings_pbs():
         'queue': 'taskfarm'
     }
 
-    nose.tools.eq_(settings['pbs'], expect)
+    assert settings['pbs'] == expect

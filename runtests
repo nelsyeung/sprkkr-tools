@@ -1,0 +1,2 @@
+#!/bin/bash
+coverage run -m py.test tests && coverage report && coverage erase

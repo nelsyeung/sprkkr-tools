@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 """Test gencomp functions."""
-import nose
 import os
 import shutil
+import pytest
 from kkrtools import gencomp
 
 fixtures_dir = os.path.join('tests', 'fixtures')
 
 
-def setup_pass():
-    pass
+@pytest.fixture
+def rmgenerated(request):
+    """Remove the generated directory"""
+    dirname = 'generated'
+
+    if os.path.isdir(dirname):
+        shutil.rmtree('generated')
+
+    def fin():
+        shutil.rmtree('generated')
+
+    request.addfinalizer(fin)
 
 
-def teardown_generated():
-    """Tear down generated fixtures."""
-    shutil.rmtree('generated')
-
-
-@nose.with_setup(setup_pass, teardown_generated)
-def test_parse_settings():
+def test_parse_settings(rmgenerated):
     """Test generate function."""
     settings = {
         'kkrtools': {
@@ -73,7 +77,7 @@ def test_parse_settings():
             dos = os.path.join(dirname, 'dos.inp')
             pot = os.path.join(dirname, 'pot.pot')
 
-            nose.tools.ok_(os.path.isdir(dirname), dirname + ' missing')
-            nose.tools.ok_(os.path.exists(scf), scf + ' missing')
-            nose.tools.ok_(os.path.exists(dos), dos + ' missing')
-            nose.tools.ok_(os.path.exists(pot), pot + ' missing')
+            assert os.path.isdir(dirname)
+            assert os.path.exists(scf)
+            assert os.path.exists(dos)
+            assert os.path.exists(pot)

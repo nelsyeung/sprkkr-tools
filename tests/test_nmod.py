@@ -1,10 +1,21 @@
 #!/usr/bin/env python3
 """Test nmod functions."""
-import nose
 import os
+import pytest
 from kkrtools import nmod
 
 fixtures_dir = os.path.join('tests', 'fixtures')
+
+
+@pytest.fixture
+def rmnew(request):
+    """Remove nmod.new"""
+    newfile = os.path.join(fixtures_dir, 'nmod.new')
+
+    def fin():
+        os.remove(newfile)
+
+    request.addfinalizer(fin)
 
 
 def test_replace_text():
@@ -17,7 +28,7 @@ def test_replace_text():
     text = nmod.replace_text(text, reps)
     expect = 'Hello Nelson. NE should be 200.'
 
-    nose.tools.assert_equal(text, expect)
+    assert text == expect
 
 
 def test_find_first_line():
@@ -27,10 +38,10 @@ def test_find_first_line():
     text = nmod.find_first_line(filepath, string)
     expect = 'Actual first line.'
 
-    nose.tools.assert_equal(text, expect)
+    assert text == expect
 
 
-def test_modify_file():
+def test_modify_file(rmnew):
     """Test modify_file function."""
     original = os.path.join(fixtures_dir, 'nmod.inp')
     new = os.path.join(fixtures_dir, 'nmod.new')
@@ -48,6 +59,4 @@ def test_modify_file():
     with open(expect_file, 'r') as f:
         expect = f.readlines()
 
-    nose.tools.assert_equal(output, expect)
-
-    os.remove(new)
+    assert output == expect
