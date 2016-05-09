@@ -81,7 +81,7 @@ def generate(settings):
             nmod.modify_file(
                 templates[inp_type], new_files[inp_type], reps[inp_type])
 
-        with open(os.path.join(sys_dir, 'kkrtools.dirs'), 'a') as f:
+        with open(os.path.join(sys_dir, 'kkrtools-dirs.txt'), 'a') as f:
             f.write(dirname + '\n')
 
     def gen_concentrations():

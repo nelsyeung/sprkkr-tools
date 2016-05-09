@@ -4,15 +4,15 @@
 #PBS -q kkrtools_queue
 #PBS -t 1-kkrtools_t
 
-cd $PBS_O_WORKDIR/new
+cd $PBS_O_WORKDIR
 
 ############################################################
 # Variables
 ############################################################
 LOG="kkrtools.log"
-DATETIME=$(date + "%d/%m/%y %T")
+DIRS="kkrtools-dirs.txt"
+DIRNAME=$(sed "${PBS_ARRAYID}q;d" $DIRS)
 T=0 # Initialise total time taken.
-DIRS="kkrtools.dirs"
 
 ############################################################
 # Functions
@@ -33,8 +33,8 @@ mvToUnsuccessful() {
     mv "$1" "$PBS_O_WORKDIR/unsuccessful"
 }
 
-cd "$(sed "${PBS_ARRAYID}q;d" $DIRS)"
-
+# Change into the required directory and get its full path.
+cd "new/$DIRNAME"
 CWD="$(pwd)"
 
 ############################################################
@@ -46,7 +46,7 @@ fi
 
 cat >> $LOG <<- EOM
 ############################################################
-# $DATETIME
+# $(date "+%d/%m/%y %T")
 ############################################################
 EOM
 
@@ -56,18 +56,19 @@ cp pot.pot pot.pot_old
 ############################################################
 # SCF calculations
 ############################################################
-kkrscf6.3 scf.inp > scf.out
+COMMAND="kkrscf6.3 < scf.inp > scf.out"
+eval $COMMAND
 
 # Check if potential file is created from kkrscf,
 # if not, move folder to unsuccessful.
 if [ ! -f "pot.pot_new" ]; then
-	printToLog "!!! ERROR: kkrscf6.3 scf.inp > scf.out" $T
+	printToLog "!!! ERROR: $COMMAND" $T
 	mvToUnsuccessful "$CWD"
 
-	exit
+	exit 2
 fi
 
-printToLog "Successful: kkrscf6.3 scf.inp > scf.out" $T
+printToLog "Successful: $COMMAND" $T
 T=$SECONDS
 
 # Replace the original potential file with the converged one.
@@ -76,17 +77,18 @@ cp pot.pot_new pot.pot
 ############################################################
 # DOS calculations
 ############################################################
-kkrgen6.3 dos.inp 
+COMMAND="kkrgen6.3 < dos.inp"
+eval $COMMAND
 
 # If DOS file is not created from kkrgen, move directory to unsuccessful.
 if [ ! -f *DOS.dos ]; then
-	printToLog "!!! ERROR: kkrgen6.3 dos.inp" $T
+	printToLog "!!! ERROR: $COMMAND" $T
 	mvToUnsuccessful "$CWD"
 
-	exit
+	exit 2
 fi
 
-printToLog "Successful: kkrgen6.3 dos.inp" $T
+printToLog "Successful: $COMMAND" $T
 T=$SECONDS
 
 ############################################################
