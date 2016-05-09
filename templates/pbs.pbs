@@ -56,18 +56,18 @@ cp pot.pot pot.pot_old
 ############################################################
 # SCF calculations
 ############################################################
-mpirun kkrscf6.3MPI scf.inp > scf.out
+kkrscf6.3 scf.inp > scf.out
 
 # Check if potential file is created from kkrscf,
 # if not, move folder to unsuccessful.
 if [ ! -f "pot.pot_new" ]; then
-	printToLog "!!! ERROR: kkrscf6.3MPI scf.inp > scf.out" $T
+	printToLog "!!! ERROR: kkrscf6.3 scf.inp > scf.out" $T
 	mvToUnsuccessful "$CWD"
 
 	exit
 fi
 
-printToLog "Successful: kkrscf6.3MPI scf.inp > scf.out" $T
+printToLog "Successful: kkrscf6.3 scf.inp > scf.out" $T
 T=$SECONDS
 
 # Replace the original potential file with the converged one.
@@ -76,17 +76,17 @@ cp pot.pot_new pot.pot
 ############################################################
 # DOS calculations
 ############################################################
-mpirun kkrgen6.3MPI dos.inp 
+kkrgen6.3 dos.inp 
 
 # If DOS file is not created from kkrgen, move directory to unsuccessful.
 if [ ! -f *DOS.dos ]; then
-	printToLog "!!! ERROR: kkrgen6.3MPI dos.inp" $T
+	printToLog "!!! ERROR: kkrgen6.3 dos.inp" $T
 	mvToUnsuccessful "$CWD"
 
 	exit
 fi
 
-printToLog "Successful: kkrgen6.3MPI dos.inp" $T
+printToLog "Successful: kkrgen6.3 dos.inp" $T
 T=$SECONDS
 
 ############################################################
